@@ -1,0 +1,36 @@
+﻿{
+  "template": "sentinel-sweep-*",
+  "index_patterns": ["sentinel-sweep-*"],
+  "settings": {
+    "number_of_shards": 1,
+    "number_of_replicas": 1,
+    "index.lifecycle.name": "sentinel_sweep_policy"
+  },
+  "mappings": {
+    "properties": {
+      "@timestamp": { "type": "date" },
+      "ip": { "type": "ip" },
+      "open_ports": { "type": "keyword" },
+      "risk_level": { "type": "keyword" },
+      "risk_score": { "type": "integer" },
+      "mitre_findings": {
+        "type": "nested",
+        "properties": {
+          "port": { "type": "integer" },
+          "technique": { "type": "keyword" },
+          "tactic": { "type": "keyword" },
+          "service": { "type": "keyword" },
+          "risk": { "type": "keyword" }
+        }
+      },
+      "recommendations": { "type": "keyword" },
+      "metadata": {
+        "properties": {
+          "report_id": { "type": "keyword" },
+          "tool_version": { "type": "keyword" },
+          "scan_summary": { "type": "object" }
+        }
+      }
+    }
+  }
+}
