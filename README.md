@@ -264,3 +264,8 @@ Translation: Use it, modify it, make it better. Just don't use it for evil.
     "In cybersecurity, we don't have a data problem—we have a signal problem. SentinelSweep isn't about finding more data; it's about finding the right data."
 
 Stop scanning. Start understanding.
+
+
+<img width="1920" height="1080" alt="Screenshot 2026-02-11 142233" src="https://github.com/user-attachments/assets/2a18e0ef-bce1-458a-b8f0-e97a57bfb49a" />
+
+
