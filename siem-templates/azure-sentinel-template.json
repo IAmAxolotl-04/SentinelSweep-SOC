@@ -1,0 +1,47 @@
+﻿{
+  "id": "sentinel-sweep-connector",
+  "name": "SentinelSweep-SOC Data Connector",
+  "type": "AzureSentinel",
+  "properties": {
+    "connectorId": "SentinelSweepSOC",
+    "dataTypes": [
+      {
+        "name": "SentinelSweep_CL",
+        "lastDataReceivedQuery": "SentinelSweep_CL | summarize Time = max(TimeGenerated) | where Time > ago(24h)"
+      }
+    ],
+    "tier": "Free",
+    "pricingModel": "PerGB",
+    "connectivityCriteria": [
+      {
+        "type": "IsConnectedQuery",
+        "value": [
+          "SentinelSweep_CL | summarize LastLogReceived = max(TimeGenerated) | project IsConnected = LastLogReceived > ago(7d)"
+        ]
+      }
+    ],
+    "availability": {
+      "status": 1,
+      "isPreview": true
+    }
+  },
+  "kind": "Custom"
+}
+
+# KQL Query for SentinelSweep Analytics Rule
+let sentinelData = 
+  SentinelSweep_CL
+  | extend RiskLevel = tostring(risk_level_s)
+  | extend IPAddress = tostring(ip_s)
+  | extend OpenPorts = tostring(open_ports_s)
+  | extend MITRETechniques = tostring(mitre_techniques_s)
+  | where RiskLevel in ("CRITICAL", "HIGH")
+  | project TimeGenerated, IPAddress, RiskLevel, OpenPorts, MITRETechniques;
+
+sentinelData
+| where TimeGenerated > ago(1h)
+| summarize StartTime = min(TimeGenerated), EndTime = max(TimeGenerated), 
+    IPCount = dcount(IPAddress),
+    HighRiskIPs = make_set(IPAddress) by RiskLevel
+| extend Severity = iff(RiskLevel == "CRITICAL", "High", "Medium")
+| extend Query = "High risk network exposure detected"

@@ -1,0 +1,31 @@
+﻿# SentinelSweep-SOC Splunk Configuration
+# sourcetype = sentinel_sweep
+
+[seninel_sweep]
+SHOULD_LINEMERGE = false
+BREAK_ONLY_BEFORE_DATE = true
+TIME_PREFIX = "timestamp":"
+TIME_FORMAT = %Y-%m-%dT%H:%M:%S
+MAX_TIMESTAMP_LOOKAHEAD = 30
+TRUNCATE = 0
+category = Custom
+pulldown_type = true
+
+# Field Extraction
+EXTRACT-ip = "ip"\s*:\s*"(?<ip>[^"]+)"
+EXTRACT-risk_level = "risk_level"\s*:\s*"(?<risk_level>[^"]+)"
+EXTRACT-risk_score = "risk_score"\s*:\s*(?<risk_score>\d+)
+EXTRACT-open_ports = "open_ports"\s*:\s*\[(?<open_ports>[^\]]+)\]
+EXTRACT-mitre_techniques = "mitre_findings"\s*:\s*\[.*?"technique"\s*:\s*"(?<mitre_technique>[^"]+)".*?\]
+
+# Saved Search for High Risk Alerts
+[High Risk Sentinel Findings]
+search = sourcetype=sentinel_sweep risk_level="CRITICAL" OR risk_level="HIGH"
+alert.track = 1
+alert.suppress = 0
+alert.suppress.period = 5m
+alert.expires = 24h
+action.email = 1
+action.email.to = security-team@yourdomain.com
+action.email.subject = SentinelSweep High Risk Finding: $ - $
+action.email.message = High risk exposure detected on $ with ports $. MITRE Techniques: $
